@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-fg font-sans;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-primary/40 text-fg;
+  }
+
+  /* Scrollbar discreto, combinando com o tema */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-outline rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-hover;
+  }
+}
+
+@layer components {
+  .container-narrow {
+    @apply mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8;
+  }
+  .container-wide {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Tipografia para conteúdo Markdown renderizado (preview admin + post público) */
+  .prose-castelo {
+    @apply text-[15px] leading-relaxed text-fg/90;
+  }
+  .prose-castelo h1 {
+    @apply font-serif text-3xl font-semibold text-fg mt-2 mb-4;
+  }
+  .prose-castelo h2 {
+    @apply font-serif text-2xl font-semibold text-fg mt-8 mb-3;
+  }
+  .prose-castelo h3 {
+    @apply font-serif text-xl font-semibold text-fg mt-6 mb-2;
+  }
+  .prose-castelo h4 {
+    @apply font-serif text-lg font-semibold text-fg mt-4 mb-2;
+  }
+  .prose-castelo p {
+    @apply my-3;
+  }
+  .prose-castelo a {
+    @apply text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary;
+  }
+  .prose-castelo strong {
+    @apply font-semibold text-fg;
+  }
+  .prose-castelo em {
+    @apply italic;
+  }
+  .prose-castelo ul {
+    @apply my-3 list-disc pl-6 space-y-1;
+  }
+  .prose-castelo ol {
+    @apply my-3 list-decimal pl-6 space-y-1;
+  }
+  .prose-castelo blockquote {
+    @apply my-4 border-l-2 border-primary/60 pl-4 italic text-muted;
+  }
+  .prose-castelo code {
+    @apply rounded bg-surface-hover px-1.5 py-0.5 font-mono text-[0.9em] text-primary;
+  }
+  .prose-castelo pre {
+    @apply my-4 overflow-x-auto rounded-lg bg-background p-4 text-sm;
+  }
+  .prose-castelo pre code {
+    @apply bg-transparent p-0 text-fg;
+  }
+  .prose-castelo hr {
+    @apply my-8 border-outline;
+  }
+  .prose-castelo img {
+    @apply my-4 rounded-lg border border-outline;
+  }
+  .prose-castelo table {
+    @apply my-4 w-full border-collapse text-sm;
+  }
+  .prose-castelo th,
+  .prose-castelo td {
+    @apply border border-outline px-3 py-2 text-left;
+  }
+  .prose-castelo th {
+    @apply bg-surface-hover font-semibold;
+  }
+}
