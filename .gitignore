@@ -38,5 +38,5 @@ Thumbs.db
 .eslintcache
 .cache/
 
-# Documentos de planejamento internos (não publicar no GitHub)
-prompt-*.md
+# Claude Code config
+.claude/
