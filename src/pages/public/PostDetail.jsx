@@ -99,18 +99,20 @@ export function PostDetail() {
   return (
     <>
       <article>
-        {/* Hero da capa */}
-        <div className="relative h-[55vh] min-h-[360px] w-full overflow-hidden">
+        {/* Hero da capa — imagem decorativa (blur + escurecida) */}
+        <div className="relative h-[45vh] min-h-[320px] w-full overflow-hidden">
           {post.cover_image ? (
             <img
               src={post.cover_image}
-              alt={post.title}
-              className="absolute inset-0 h-full w-full object-cover object-top"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full scale-110 object-cover object-center blur-[6px]"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-secondary/40 via-surface to-background" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
+          <div className="absolute inset-0 bg-background/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
         </div>
 
         <div className="container-narrow -mt-44 sm:-mt-56 relative">
