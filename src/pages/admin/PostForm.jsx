@@ -18,7 +18,34 @@ const EMPTY_FORM = {
   content: '',
   category: 'reuniao',
   published: true,
+  publishedDate: '',
 };
+
+// Data de hoje no formato YYYY-MM-DD (horário local), pra usar em <input type="date">.
+function todayInputValue() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Converte timestamp ISO do Supabase para YYYY-MM-DD em horário local.
+function isoToInputDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Converte YYYY-MM-DD do input para ISO ao meio-dia local (evita "voltar um dia" por TZ).
+function inputDateToIso(value) {
+  if (!value) return null;
+  return new Date(`${value}T12:00:00`).toISOString();
+}
 
 export function PostForm() {
   const { id } = useParams();
@@ -26,7 +53,10 @@ export function PostForm() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm] = useState(() => ({
+    ...EMPTY_FORM,
+    publishedDate: todayInputValue(),
+  }));
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   // Capa
@@ -65,6 +95,7 @@ export function PostForm() {
           content: post.content,
           category: post.category,
           published: post.published,
+          publishedDate: isoToInputDate(post.created_at),
         });
         setSlugManuallyEdited(true); // ao editar, não regenerar slug a partir do título
         setExistingCoverUrl(post.cover_image ?? null);
@@ -98,23 +129,26 @@ export function PostForm() {
     form.title.trim() &&
     form.slug.trim() &&
     form.content.trim() &&
-    form.category;
+    form.category &&
+    form.publishedDate;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isValid || submitting) return;
     setSubmitting(true);
     try {
+      const basePost = {
+        title: form.title.trim(),
+        slug: form.slug.trim(),
+        content: form.content,
+        category: form.category,
+        published: form.published,
+        created_at: inputDateToIso(form.publishedDate),
+      };
       if (isEdit) {
         await updatePost({
           id,
-          post: {
-            title: form.title.trim(),
-            slug: form.slug.trim(),
-            content: form.content,
-            category: form.category,
-            published: form.published,
-          },
+          post: basePost,
           coverFile,
           existingCoverUrl,
           galleryFiles: newGalleryFiles,
@@ -125,13 +159,7 @@ export function PostForm() {
         toast.success('Post atualizado.');
       } else {
         await createPost({
-          post: {
-            title: form.title.trim(),
-            slug: form.slug.trim(),
-            content: form.content,
-            category: form.category,
-            published: form.published,
-          },
+          post: basePost,
           coverFile,
           galleryFiles: newGalleryFiles,
         });
@@ -246,7 +274,7 @@ export function PostForm() {
         </div>
 
         {/* Categoria, data, publicado */}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <label className="block">
             <span className="text-sm text-muted">Categoria</span>
             <select
@@ -260,6 +288,17 @@ export function PostForm() {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label className="block">
+            <span className="text-sm text-muted">Data de publicação</span>
+            <input
+              type="date"
+              required
+              value={form.publishedDate}
+              onChange={(e) => setForm((f) => ({ ...f, publishedDate: e.target.value }))}
+              className="mt-1 w-full rounded-lg border border-outline bg-background px-3 py-2.5 text-fg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
           </label>
 
           <label className="flex items-center gap-3 self-end rounded-lg border border-outline bg-background px-3 py-2.5">
