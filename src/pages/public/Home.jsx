@@ -159,7 +159,8 @@ export function Home() {
           <p className="mt-4 text-lg text-muted">
             O Castelo de Escudeiros é a porta de entrada da Ordem DeMolay para crianças e
             pré-adolescentes de 7 a 11 anos completos. Nele, você encontra reuniões,
-            atividades, ações sociais e cerimônias que constroem caráter, amizade e liderança em um ambiente seguro, alegre e fraternal.
+            atividades, ações sociais e cerimônias que constroem caráter, amizade e liderança 
+            em um ambiente seguro, alegre e fraternal.
           </p>
         </div>
 
