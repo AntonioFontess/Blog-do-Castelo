@@ -26,7 +26,7 @@ export function Contato() {
         </h1>
         <p className="mt-4 text-muted">
           Se você tem entre 7 e 11 anos completos (ou é responsável por uma criança nessa
-          idade) e quer conhecer o Castelo dos Escudeiros, escolha o canal que preferir abaixo.
+          idade) e quer conhecer o Castelo Hernani Vallim n° 123, escolha o canal que preferir abaixo.
         </p>
       </div>
 
