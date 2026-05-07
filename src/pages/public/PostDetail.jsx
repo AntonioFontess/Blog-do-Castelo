@@ -99,81 +99,81 @@ export function PostDetail() {
   return (
     <>
       <article>
-        {/* Hero da capa — imagem decorativa (blur + escurecida) */}
-        <div className="relative h-[45vh] min-h-[320px] w-full overflow-hidden">
+        {/* Backdrop borrado envolvendo o card (card centralizado) */}
+        <section className="relative overflow-hidden">
           {post.cover_image ? (
             <img
               src={post.cover_image}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full scale-110 object-cover object-center blur-[6px]"
+              className="absolute inset-0 h-full w-full scale-110 object-cover object-center blur-[10px]"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-secondary/40 via-surface to-background" />
           )}
-          <div className="absolute inset-0 bg-background/50" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
-        </div>
+          <div className="absolute inset-0 bg-background/65" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/60" />
 
-        <div className="container-narrow -mt-44 sm:-mt-56 relative">
-          <div className="rounded-2xl border border-outline bg-surface p-6 sm:p-10">
-            <Link
-              to="/blog"
-              className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-            >
-              ← Voltar para o blog
-            </Link>
+          <div className="container-narrow relative py-16 sm:py-24">
+            <div className="rounded-2xl border border-outline bg-surface p-6 sm:p-10">
+              <Link
+                to="/blog"
+                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+              >
+                ← Voltar para o blog
+              </Link>
 
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <Badge>{categoryLabel(post.category)}</Badge>
-              <span className="text-xs uppercase tracking-[0.18em] text-muted">
-                {formatDate(post.created_at)}
-              </span>
-              {!post.published && (
-                <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-amber-200">
-                  Rascunho
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <Badge>{categoryLabel(post.category)}</Badge>
+                <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                  {formatDate(post.created_at)}
                 </span>
-              )}
-            </div>
+                {!post.published && (
+                  <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-amber-200">
+                    Rascunho
+                  </span>
+                )}
+              </div>
 
-            <h1 className="mt-3 font-serif text-3xl font-semibold leading-tight text-fg sm:text-5xl">
-              {post.title}
-            </h1>
+              <h1 className="mt-3 font-serif text-3xl font-semibold leading-tight text-fg sm:text-5xl">
+                {post.title}
+              </h1>
 
-            <div className="mt-8">
-              <MarkdownContent>{post.content}</MarkdownContent>
-            </div>
-          </div>
-
-          {/* Galeria */}
-          {images.length > 0 && (
-            <div className="mt-12">
-              <h2 className="font-serif text-2xl font-semibold text-fg sm:text-3xl">
-                Galeria
-              </h2>
-              <p className="mt-1 text-sm text-muted">
-                {images.length} {images.length === 1 ? 'imagem' : 'imagens'} · clique para ampliar
-              </p>
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {images.map((img, i) => (
-                  <button
-                    key={img.id}
-                    type="button"
-                    onClick={() => setLightboxIndex(i)}
-                    className="group overflow-hidden rounded-lg border border-outline bg-surface transition-colors hover:border-primary/40"
-                  >
-                    <img
-                      src={img.image_url}
-                      alt={`Imagem ${i + 1} de ${post.title}`}
-                      loading="lazy"
-                      className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </button>
-                ))}
+              <div className="mt-8">
+                <MarkdownContent>{post.content}</MarkdownContent>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        </section>
+
+        {/* Galeria */}
+        {images.length > 0 && (
+          <div className="container-narrow mt-12">
+            <h2 className="font-serif text-2xl font-semibold text-fg sm:text-3xl">
+              Galeria
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              {images.length} {images.length === 1 ? 'imagem' : 'imagens'} · clique para ampliar
+            </p>
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {images.map((img, i) => (
+                <button
+                  key={img.id}
+                  type="button"
+                  onClick={() => setLightboxIndex(i)}
+                  className="group overflow-hidden rounded-lg border border-outline bg-surface transition-colors hover:border-primary/40"
+                >
+                  <img
+                    src={img.image_url}
+                    alt={`Imagem ${i + 1} de ${post.title}`}
+                    loading="lazy"
+                    className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="container-narrow mt-16 mb-8 text-center">
           <Link
