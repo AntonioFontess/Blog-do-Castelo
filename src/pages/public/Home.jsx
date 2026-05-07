@@ -294,7 +294,7 @@ export function Home() {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
             Se você tem entre 7 e 11 anos completos (ou é responsável por uma criança
-            nessa faixa) e quer conhecer um Castelo de Escudeiros, fale com a gente. Será
+            nessa idade) e quer conhecer um Castelo de Escudeiros, fale com a gente. Será
             um prazer te receber em uma de nossas reuniões.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
