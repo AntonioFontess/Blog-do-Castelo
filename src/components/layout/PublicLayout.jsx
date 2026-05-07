@@ -13,7 +13,7 @@ export function PublicLayout() {
         Pular para o conteúdo
       </a>
       <Navbar />
-      <main id="main-content" tabIndex={-1} className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col">
         <Outlet />
       </main>
       <Footer />
