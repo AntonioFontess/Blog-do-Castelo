@@ -110,8 +110,8 @@ export function PostDetail() {
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-secondary/40 via-surface to-background" />
           )}
-          <div className="absolute inset-0 bg-background/65" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/70" />
+          <div className="absolute inset-0 bg-background/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-transparent" />
         </div>
 
         <div className="container-narrow relative py-16 sm:py-24">
