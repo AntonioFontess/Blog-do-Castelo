@@ -98,7 +98,7 @@ export function PostDetail() {
 
   return (
     <>
-      <article className="relative flex flex-1 flex-col overflow-hidden">
+      <article className="relative -mb-24 flex flex-1 flex-col overflow-hidden">
         {/* Backdrop borrado cobrindo todo o artigo (até logo antes do footer) */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           {post.cover_image ? (
