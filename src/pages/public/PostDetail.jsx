@@ -98,9 +98,12 @@ export function PostDetail() {
 
   return (
     <>
-      <article className="relative -mb-24 flex flex-1 flex-col overflow-hidden">
-        {/* Backdrop borrado cobrindo todo o artigo (até logo antes do footer) */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <article className="relative isolate -mb-24 flex flex-1 flex-col">
+        {/* Backdrop borrado fixo no viewport — preenche tudo entre navbar e footer */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-x-0 bottom-0 top-16 -z-10 overflow-hidden"
+        >
           {post.cover_image ? (
             <img
               src={post.cover_image}
@@ -111,7 +114,6 @@ export function PostDetail() {
             <div className="absolute inset-0 bg-gradient-to-br from-secondary/40 via-surface to-background" />
           )}
           <div className="absolute inset-0 bg-background/60" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-transparent" />
         </div>
 
         <div className="container-narrow relative py-16 sm:py-24">
