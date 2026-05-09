@@ -18,7 +18,16 @@ export function slugify(text) {
 // Formata data ISO/Date para DD/MM/AAAA.
 export function formatDate(value) {
   if (!value) return '';
-  const date = value instanceof Date ? value : new Date(value);
+  // Strings YYYY-MM-DD (coluna DATE do Postgres) precisam ser parseadas como
+  // meia-noite local — senão `new Date('2026-05-16')` vira UTC e em Brasília
+  // (UTC-3) o toLocaleDateString mostra o dia anterior.
+  let date;
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [y, m, d] = value.split('-').map(Number);
+    date = new Date(y, m - 1, d);
+  } else {
+    date = value instanceof Date ? value : new Date(value);
+  }
   if (Number.isNaN(date.getTime())) return '';
   return date.toLocaleDateString('pt-BR', {
     day: '2-digit',
