@@ -1,13 +1,15 @@
 import { Card } from '../ui/Card';
-import { formatDate, formatTime } from '../../lib/utils';
+import { formatDate, formatTime, parseLocalDate } from '../../lib/utils';
 
 export function EventCard({ event }) {
-  const date = new Date(`${event.date}T00:00:00`);
-  const day = date.toLocaleDateString('pt-BR', { day: '2-digit' });
+  const date = parseLocalDate(event.date);
+  const day = date ? date.toLocaleDateString('pt-BR', { day: '2-digit' }) : '--';
   const month = date
-    .toLocaleDateString('pt-BR', { month: 'short' })
-    .replace('.', '')
-    .toUpperCase();
+    ? date
+        .toLocaleDateString('pt-BR', { month: 'short' })
+        .replace('.', '')
+        .toUpperCase()
+    : '';
 
   return (
     <Card className="flex items-stretch gap-4 p-5">

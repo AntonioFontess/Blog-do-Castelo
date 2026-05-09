@@ -60,7 +60,11 @@ export function PostForm() {
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   // Capa
+  // `existingCoverUrl` é o estado da UI (vira null quando o usuário clica
+  // "Remover"). `originalCoverUrl` guarda o valor do banco no momento da
+  // edição, pra que `updatePost` consiga apagar do Storage mesmo em remoção.
   const [existingCoverUrl, setExistingCoverUrl] = useState(null);
+  const [originalCoverUrl, setOriginalCoverUrl] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
 
   // Galeria
@@ -99,6 +103,7 @@ export function PostForm() {
         });
         setSlugManuallyEdited(true); // ao editar, não regenerar slug a partir do título
         setExistingCoverUrl(post.cover_image ?? null);
+        setOriginalCoverUrl(post.cover_image ?? null);
         setExistingGallery(images);
       } catch (err) {
         if (!cancelled) setLoadError('Erro ao carregar o post.');
@@ -151,6 +156,7 @@ export function PostForm() {
           post: basePost,
           coverFile,
           existingCoverUrl,
+          originalCoverUrl,
           galleryFiles: newGalleryFiles,
           removedGalleryItems: existingGallery.filter((g) =>
             removedGalleryIds.includes(g.id)

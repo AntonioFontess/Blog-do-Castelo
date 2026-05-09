@@ -74,6 +74,8 @@ export async function listPostImages(postId) {
 // ----- ESCRITA --------------------------------------------------------------
 
 // Cria post, faz upload de capa e galeria. Retorna o post criado.
+// Se a galeria falhar, desfaz a criação do post para evitar "post fantasma"
+// sem as imagens que o usuário esperava ter cadastrado.
 export async function createPost({ post, coverFile, galleryFiles }) {
   let coverUrl = null;
   if (coverFile) {
@@ -92,38 +94,52 @@ export async function createPost({ post, coverFile, galleryFiles }) {
   }
 
   if (galleryFiles?.length) {
-    await uploadGalleryFor(created.id, galleryFiles);
+    try {
+      await uploadGalleryFor(created.id, galleryFiles);
+    } catch (galleryErr) {
+      await supabase.from('posts').delete().eq('id', created.id);
+      if (coverUrl) await deleteFromStorage('covers', coverUrl);
+      throw galleryErr;
+    }
   }
   invalidateCache('posts:');
   return created;
 }
 
 // Atualiza post, troca capa se vier nova, sincroniza galeria.
-// `removedGalleryIds` = ids de post_images existentes a remover.
-// `existingCoverUrl` = URL atual no banco (pra apagar do Storage se trocada).
+// - `coverFile`: novo arquivo a subir (ou null).
+// - `existingCoverUrl`: URL desejada quando NÃO há novo arquivo. Null = remover.
+// - `originalCoverUrl`: URL atual no banco; usada pra apagar do Storage quando
+//    a capa for trocada OU removida.
 export async function updatePost({
   id,
   post,
   coverFile,
   existingCoverUrl,
+  originalCoverUrl,
   galleryFiles,
   removedGalleryItems,
 }) {
-  let coverUrl = existingCoverUrl ?? null;
+  let nextCoverUrl = existingCoverUrl ?? null;
+  let uploadedCoverUrl = null;
   if (coverFile) {
     const { publicUrl } = await uploadFile('covers', coverFile);
-    coverUrl = publicUrl;
+    uploadedCoverUrl = publicUrl;
+    nextCoverUrl = publicUrl;
   }
 
   const { error: updateErr } = await supabase
     .from('posts')
-    .update({ ...post, cover_image: coverUrl })
+    .update({ ...post, cover_image: nextCoverUrl })
     .eq('id', id);
-  if (updateErr) throw updateErr;
+  if (updateErr) {
+    if (uploadedCoverUrl) await deleteFromStorage('covers', uploadedCoverUrl);
+    throw updateErr;
+  }
 
-  // Apagar capa antiga se foi trocada
-  if (coverFile && existingCoverUrl && existingCoverUrl !== coverUrl) {
-    await deleteFromStorage('covers', existingCoverUrl);
+  // Apagar capa antiga em qualquer mudança (troca ou remoção).
+  if (originalCoverUrl && originalCoverUrl !== nextCoverUrl) {
+    await deleteFromStorage('covers', originalCoverUrl);
   }
 
   // Remover imagens antigas marcadas
@@ -142,10 +158,27 @@ export async function updatePost({
   invalidateCache('posts:');
 }
 
+// Atômico: ou todas as imagens entram na galeria, ou nenhuma. Se algum upload
+// falhar (ou o insert no DB falhar), os arquivos já enviados são removidos do
+// Storage para não virarem órfãos.
 async function uploadGalleryFor(postId, files) {
-  const uploads = await Promise.all(
+  const results = await Promise.allSettled(
     files.map((file) => uploadFile('gallery', file))
   );
+
+  const uploaded = [];
+  const failedNames = [];
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled') uploaded.push(r.value);
+    else failedNames.push(files[i]?.name ?? 'arquivo');
+  });
+
+  if (failedNames.length) {
+    await Promise.all(
+      uploaded.map((u) => deleteFromStorage('gallery', u.publicUrl))
+    );
+    throw new Error(`Falha ao enviar imagens: ${failedNames.join(', ')}`);
+  }
 
   // Pega o maior display_order existente para empilhar abaixo dele
   const { data: existing } = await supabase
@@ -156,13 +189,18 @@ async function uploadGalleryFor(postId, files) {
     .limit(1);
   const start = (existing?.[0]?.display_order ?? -1) + 1;
 
-  const rows = uploads.map((u, i) => ({
+  const rows = uploaded.map((u, i) => ({
     post_id: postId,
     image_url: u.publicUrl,
     display_order: start + i,
   }));
   const { error } = await supabase.from('post_images').insert(rows);
-  if (error) throw error;
+  if (error) {
+    await Promise.all(
+      uploaded.map((u) => deleteFromStorage('gallery', u.publicUrl))
+    );
+    throw error;
+  }
 }
 
 // Deleta post + galeria + arquivos no Storage.
