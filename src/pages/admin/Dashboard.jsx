@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { todayIso } from '../../lib/events';
 
 function StatCard({ label, value, hint, loading, accent = 'primary' }) {
   const accentClass = accent === 'primary' ? 'text-primary' : 'text-secondary';
@@ -25,7 +26,7 @@ export function Dashboard() {
     async function load() {
       setLoading(true);
       setError(null);
-      const today = new Date().toISOString().slice(0, 10);
+      const today = todayIso();
 
       // allSettled garante que se uma query falhar, as outras ainda mostram valor.
       const [postsRes, eventsRes, contactsRes] = await Promise.allSettled([

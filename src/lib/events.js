@@ -2,8 +2,15 @@ import { supabase } from './supabase';
 import { getCached, setCached, invalidateCache } from './cache';
 
 // Hoje no formato YYYY-MM-DD (para comparação com a coluna DATE do Postgres).
-function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+// Usa horário local — `toISOString()` daria a data UTC, e em Brasília (UTC-3)
+// das 21h às 23h59 isso já marcaria o dia seguinte, fazendo eventos do dia
+// "saltarem" pra passado.
+export function todayIso() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 // Lista todos os eventos ordenados por data crescente.
